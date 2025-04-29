@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HYDRABAD</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background-color: #191616;
+
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      padding: 20px;
+    }
+    
+    .ward-card {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .ward-title {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #1fa22c;
+      font-size: 16px;
+    }
+    
+    .chart-box {
+      height: 180px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
+    }
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      margin-right: 5px;
+      border-radius: 2px;
+      display: inline-block;
+    }
+    .legend-text {
+      font-size: 12px;
+    }
+    
+
+
+
+    
+  </style>
+</head>
+<body>
+<h6>Ecosystem Service Valuation</h6>
+<style>
+  h6 {
+  color: #ffffff;
+  text-align: center;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  background: linear-gradient(135deg, #2c3e50 0%, #27ae60 100%);
+  border-radius: 8px;
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+h6::before {
+  content: '🌱';
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.8rem;
+}
+
+h6::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 3px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+}
+
+h6:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 768px) {
+  h6 {
+    font-size: 1.5rem;
+    padding: 1rem;
+  }
+  h6::before {
+    display: none;
+  }
+}
+
+</style>
+
+<!-- Main Container -->
+<div class="container" style="display: flex; height: 100vh;">
+
+  <!-- Map Section (iframe + chart) -->
+  <div class="map-section">
+    <div style="flex: 1; display: flex; flex-direction: column;">
+
+    <!-- Map Section -->
+  <div class="map-section" style="flex-grow: 1; padding: 20px;">
+    <iframe id="githubFrame" src=" https://pri0111.github.io/HYDRABAD_WARD/" 
+      width="1000px" height="800px" frameborder="0"
+      style="border:2px solid #555; border-radius:8px;">
+    </iframe>
+  </div>
+      <!-- Chart Grid -->
+      <div class="grid" id="wardGrid"></div>
+
+    </div>
+  </div>
+
+  <!-- Sidebar Section -->
+  <div class="sidebar" style="
+    width: 350px;
+    height: 800px;
+    background: #402b2b;
+    padding: 24px;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: #b09e9d;
+">
+  <div class="panel">
+    <h3 style="margin-bottom: 20px; font-size: 22px; font-weight: 600; color: #ff9f04;">Ward Wise Selection</h3>
+
+    <div class="radio-group" style="margin-bottom: 28px;">
+        <label style="display: block; font-weight: 500; margin-bottom: 12px; font-size: 14px;">Select Year</label>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+            <input type="radio" name="selection" onclick="loadYear('1990')"> 1990
+          </label>
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+            <input type="radio" name="selection" onclick="loadYear('2000')"> 2000
+          </label>
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+            <input type="radio" name="selection" onclick="loadYear('2010')"> 2010
+          </label>
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 14px;">
+            <input type="radio" name="selection" onclick="loadYear('2020')"> 2020
+          </label>
+        </div>
+      </div>
+
+         <!-- Ward Dropdown Selection -->
+         <div class="controls" style="margin-bottom: 30px;">
+            <label for="ward-number" style="display: block; font-weight: 500; margin-bottom: 8px; font-size: 14px;">Select Ward</label>
+            <select id="ward-number" style="
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid #d1d5db;
+                border-radius: 8px;
+                background: #f9fafb;
+                font-size: 14px;
+                appearance: none;
+                outline: none;
+            ">
+              <option value="" disabled selected>Select Ward</option>
+            </select>
+          </div>
+
+
+         <!-- Chart inside Panel -->
+         <div id="chartContainer" style="margin-top: 30px;"></div>
+
+
+</div>
+</div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// Example github links for years
+const githubLinks = {
+    "1990": "https://pri0111.github.io/HYDRABAD_1990/",
+    "2000": "https://pri0111.github.io/HYDRABAD_2000/",
+    "2010": "https://pri0111.github.io/HYDRABAD_2010/",
+    "2020": "https://pri0111.github.io/HYDRABAD_2020/"
+  };
+
+// Services List
+const services = [
+    "Provisional Service of Vegetation", "Regulating Service of Vegetation", "Supporting Service of Vegetation", 
+    "SCultural Service of Vegetation","Provisional Service of Agricultural Land","Regulating Service of Agricultural Land",
+    "Supporting Service of Agricultural Land","Cultural Service of Agricultural Land","Provisional Service of Shrub",
+    "Regulating Service of Shrub", "Supporting Service of Shrub","Cultural Service of Shrub", "Provisional Service of Waterbody",
+    "Regulating Service of Waterbody","Supporting Service of Waterbody","Cultural Service of Waterbody",
+  ];
+
+// Data for each year
+const dataByYear = {
+
+};
+["1990", "2000", "2010", "2020"].forEach(year => {
+  dataByYear[year] = [];
+  for (let i = 1; i <= 200; i++) { 
+    services.forEach(service => { 
+      dataByYear[year].push({
+        "Ward No": `${i}`,
+        "Service Type": service,
+        "Values": (Math.random() * 100).toFixed(2)
+      });
+    });
+  }
+});
+
+let currentWards = {};
+let currentYear = null; // Track current year selected
+
+function loadYear(year) {
+  currentYear = year; // Update current year
+  const iframe = document.getElementById('githubFrame');
+  iframe.src = githubLinks[year];
+
+  // Load wards data
+  const rawData = dataByYear[year];
+  currentWards = {};
+
+  rawData.forEach(item => {
+    const wardNo = item["Ward No"];
+    if (!currentWards[wardNo]) currentWards[wardNo] = [];
+    currentWards[wardNo].push({
+      service: item["Service Type"].replace(/_/g, ' '),
+      value: parseFloat(item["Values"])
+    });
+  });
+
+  // Populate ward dropdown
+  const wardSelect = document.getElementById('ward-number');
+  wardSelect.innerHTML = '<option value="" disabled selected>Select Ward</option>';
+  
+  Object.keys(currentWards).forEach(wardNo => {
+    const option = document.createElement('option');
+    option.value = wardNo;
+    option.textContent = `Ward ${wardNo}`;
+    wardSelect.appendChild(option);
+  });
+
+  // Clear previous chart
+  document.getElementById('wardGrid').innerHTML = '';
+}
+
+function renderWardChart(wardNo) {
+  const wardGrid = document.getElementById('chartContainer'); // <- not wardGrid
+  wardGrid.innerHTML = '';
+
+  if (!currentWards[wardNo]) return;
+
+  const card = document.createElement('div');
+  card.className = 'ward-card';
+  card.innerHTML = `
+    <div class="ward-title">Ward ${wardNo}</div>
+    <div class="chart-box"><canvas></canvas></div>
+    <div class="legend-box"></div>
+  `;
+
+  wardGrid.appendChild(card);
+
+const ctx = card.querySelector('canvas').getContext('2d');
+
+const services = currentWards[wardNo].map(d => d.service);
+const values = currentWards[wardNo].map(d => d.value);
+const colors = [
+  '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+  '#9966FF', '#FF9F40', '#E7E9ED', '#8C9EFF',
+  '#00BFA5', '#F50057', '#00C853', '#D500F9'
+];
+
+new Chart(ctx, {
+  type: 'doughnut',
+  data: {
+    labels: services,
+    datasets: [{
+      data: values,
+      backgroundColor: colors,
+      borderWidth: 0
+    }]
+  },
+  options: {
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: true }
+    },
+    cutout: '60%'
+  }
+});
+
+// Create Legend
+const legendBox = card.querySelector('.legend-box');
+services.forEach((service, index) => {
+  const legendItem = document.createElement('div');
+  legendItem.className = 'legend-item';
+  legendItem.innerHTML = `
+    <span class="legend-color" style="background-color:${colors[index % colors.length]}"></span>
+    <span class="legend-text">${service}</span>
+  `;
+  legendBox.appendChild(legendItem);
+});
+}
+
+// Listen to Ward dropdown change
+document.getElementById('ward-number').addEventListener('change', function() {
+  if (this.value) {
+    renderWardChart(this.value);
+  }
+});
+
+</script>
+
+</div>
+</div>
+</body>
+</html>
